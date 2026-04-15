@@ -1,26 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import Navbar from "@/components/Navbar";
+import HeroSection from "@/components/HeroSection";
+import FeaturesSection from "@/components/FeaturesSection";
+import MarketSection from "@/components/MarketSection";
+import CompetitorsSection from "@/components/CompetitorsSection";
+import PricingSection from "@/components/PricingSection";
+import CTASection from "@/components/CTASection";
+import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "NyayaAI — India's Legal Infrastructure Platform" },
+      { name: "description", content: "AI-powered legal guidance, document automation, and execution workflows. Democratizing justice for 1.4B Indians." },
+      { property: "og:title", content: "NyayaAI — Justice, Made Accessible" },
+      { property: "og:description", content: "India's first full-stack legal execution engine. From advice to action." },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="/placeholder.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <HeroSection />
+      <FeaturesSection />
+      <MarketSection />
+      <CompetitorsSection />
+      <PricingSection />
+      <CTASection />
+      <Footer />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
