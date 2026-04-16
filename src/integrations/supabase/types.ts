@@ -103,6 +103,82 @@ export type Database = {
           },
         ]
       }
+      consultation_messages: {
+        Row: {
+          consultation_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          consultation_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          consultation_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_messages_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultations: {
+        Row: {
+          consultation_date: string
+          created_at: string
+          id: string
+          lawyer_id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["consultation_status"]
+          time_slot: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consultation_date: string
+          created_at?: string
+          id?: string
+          lawyer_id: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["consultation_status"]
+          time_slot: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consultation_date?: string
+          created_at?: string
+          id?: string
+          lawyer_id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["consultation_status"]
+          time_slot?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_lawyer_id_fkey"
+            columns: ["lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "lawyers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           content: string | null
@@ -160,6 +236,80 @@ export type Database = {
           summary?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      lawyer_availability: {
+        Row: {
+          day_of_week: number
+          id: string
+          lawyer_id: string
+          time_slots: string[]
+        }
+        Insert: {
+          day_of_week: number
+          id?: string
+          lawyer_id: string
+          time_slots?: string[]
+        }
+        Update: {
+          day_of_week?: number
+          id?: string
+          lawyer_id?: string
+          time_slots?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lawyer_availability_lawyer_id_fkey"
+            columns: ["lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "lawyers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lawyers: {
+        Row: {
+          bio: string | null
+          consultation_fee: number | null
+          created_at: string
+          experience_years: number
+          id: string
+          is_available: boolean
+          name: string
+          profile_photo_url: string | null
+          rating: number
+          specialization: Database["public"]["Enums"]["lawyer_specialization"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          bio?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number
+          id?: string
+          is_available?: boolean
+          name: string
+          profile_photo_url?: string | null
+          rating?: number
+          specialization: Database["public"]["Enums"]["lawyer_specialization"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          bio?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number
+          id?: string
+          is_available?: boolean
+          name?: string
+          profile_photo_url?: string | null
+          rating?: number
+          specialization?: Database["public"]["Enums"]["lawyer_specialization"]
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -224,12 +374,22 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       case_status: "pending" | "active" | "closed"
+      consultation_status: "pending" | "confirmed" | "completed" | "cancelled"
       document_type:
         | "fir_draft"
         | "rental_agreement"
         | "affidavit"
         | "legal_notice"
       knowledge_category: "criminal" | "civil" | "corporate"
+      lawyer_specialization:
+        | "criminal"
+        | "civil"
+        | "corporate"
+        | "family"
+        | "property"
+        | "labour"
+        | "tax"
+        | "constitutional"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -359,6 +519,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       case_status: ["pending", "active", "closed"],
+      consultation_status: ["pending", "confirmed", "completed", "cancelled"],
       document_type: [
         "fir_draft",
         "rental_agreement",
@@ -366,6 +527,16 @@ export const Constants = {
         "legal_notice",
       ],
       knowledge_category: ["criminal", "civil", "corporate"],
+      lawyer_specialization: [
+        "criminal",
+        "civil",
+        "corporate",
+        "family",
+        "property",
+        "labour",
+        "tax",
+        "constitutional",
+      ],
     },
   },
 } as const

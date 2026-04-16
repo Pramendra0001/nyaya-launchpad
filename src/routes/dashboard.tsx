@@ -3,8 +3,8 @@ import AppLayout from "@/components/AppLayout";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { MessageSquare, FileText, Briefcase, ArrowRight, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MessageSquare, FileText, Briefcase, ArrowRight, Users, CalendarIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -20,7 +20,8 @@ function DashboardPage() {
 
 function DashboardContent() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ cases: 0, documents: 0, conversations: 0 });
+  const [stats, setStats] = useState({ cases: 0, documents: 0, conversations: 0, consultations: 0 });
+  const [upcomingConsultations, setUpcomingConsultations] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -28,15 +29,26 @@ function DashboardContent() {
       supabase.from("cases").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("documents").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("chat_conversations").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-    ]).then(([c, d, ch]) => {
-      setStats({ cases: c.count ?? 0, documents: d.count ?? 0, conversations: ch.count ?? 0 });
+      supabase.from("consultations").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("status", ["pending", "confirmed"]),
+    ]).then(([c, d, ch, con]) => {
+      setStats({ cases: c.count ?? 0, documents: d.count ?? 0, conversations: ch.count ?? 0, consultations: con.count ?? 0 });
     });
+
+    supabase
+      .from("consultations")
+      .select("*, lawyers(name, specialization)")
+      .eq("user_id", user.id)
+      .in("status", ["pending", "confirmed"])
+      .order("consultation_date", { ascending: true })
+      .limit(3)
+      .then(({ data }) => setUpcomingConsultations(data ?? []));
   }, [user]);
 
   const quickActions = [
-    { to: "/assistant", icon: MessageSquare, title: "Ask AI", desc: "Get legal guidance instantly", color: "text-blue-500" },
-    { to: "/documents", icon: FileText, title: "Generate Document", desc: "Create legal documents", color: "text-emerald-500" },
-    { to: "/cases", icon: Briefcase, title: "Track Case", desc: "Manage your cases", color: "text-amber-500" },
+    { to: "/assistant", icon: MessageSquare, title: "Ask AI", desc: "Get legal guidance instantly", color: "text-chart-1" },
+    { to: "/documents", icon: FileText, title: "Generate Document", desc: "Create legal documents", color: "text-success" },
+    { to: "/cases", icon: Briefcase, title: "Track Case", desc: "Manage your cases", color: "text-warning" },
+    { to: "/lawyers", icon: Users, title: "Consult Lawyer", desc: "Book a consultation", color: "text-chart-4" },
   ];
 
   return (
@@ -46,12 +58,12 @@ function DashboardContent() {
         <p className="text-muted-foreground mt-1">Here's your legal workspace overview.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Active Cases", value: stats.cases, icon: Briefcase },
           { label: "Documents", value: stats.documents, icon: FileText },
           { label: "AI Conversations", value: stats.conversations, icon: MessageSquare },
+          { label: "Consultations", value: stats.consultations, icon: CalendarIcon },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border bg-card p-5 shadow-sm">
             <div className="flex items-center justify-between">
@@ -63,10 +75,9 @@ function DashboardContent() {
         ))}
       </div>
 
-      {/* Quick Actions */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((a) => (
             <Link key={a.to} to={a.to} className="group rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
               <a.icon className={`h-8 w-8 ${a.color} mb-3`} />
@@ -79,6 +90,26 @@ function DashboardContent() {
           ))}
         </div>
       </div>
+
+      {upcomingConsultations.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Upcoming Consultations</h2>
+            <Link to="/consultations" className="text-sm text-primary hover:underline">View all</Link>
+          </div>
+          <div className="space-y-3">
+            {upcomingConsultations.map((c) => (
+              <div key={c.id} className="rounded-xl border bg-card p-4 flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="font-semibold">{c.lawyers?.name ?? "Unknown"}</h3>
+                  <p className="text-sm text-muted-foreground capitalize">{c.lawyers?.specialization} Law · {c.consultation_date} · {c.time_slot}</p>
+                </div>
+                <Badge variant={c.status === "confirmed" ? "default" : "outline"}>{c.status}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

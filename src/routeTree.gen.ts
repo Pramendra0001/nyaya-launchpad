@@ -10,22 +10,36 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LawyersRouteImport } from './routes/lawyers'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ConsultationsRouteImport } from './routes/consultations'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LawyersIdRouteImport } from './routes/lawyers.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LawyersRoute = LawyersRouteImport.update({
+  id: '/lawyers',
+  path: '/lawyers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KnowledgeRoute = KnowledgeRouteImport.update({
@@ -43,6 +57,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsultationsRoute = ConsultationsRouteImport.update({
+  id: '/consultations',
+  path: '/consultations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CasesRoute = CasesRouteImport.update({
   id: '/cases',
   path: '/cases',
@@ -58,37 +77,54 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LawyersIdRoute = LawyersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => LawyersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/cases': typeof CasesRoute
+  '/consultations': typeof ConsultationsRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/knowledge': typeof KnowledgeRoute
+  '/lawyers': typeof LawyersRouteWithChildren
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/lawyers/$id': typeof LawyersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/cases': typeof CasesRoute
+  '/consultations': typeof ConsultationsRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/knowledge': typeof KnowledgeRoute
+  '/lawyers': typeof LawyersRouteWithChildren
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/lawyers/$id': typeof LawyersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/cases': typeof CasesRoute
+  '/consultations': typeof ConsultationsRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/knowledge': typeof KnowledgeRoute
+  '/lawyers': typeof LawyersRouteWithChildren
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/lawyers/$id': typeof LawyersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,41 +132,56 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/cases'
+    | '/consultations'
     | '/dashboard'
     | '/documents'
     | '/knowledge'
+    | '/lawyers'
     | '/login'
+    | '/profile'
     | '/signup'
+    | '/lawyers/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/assistant'
     | '/cases'
+    | '/consultations'
     | '/dashboard'
     | '/documents'
     | '/knowledge'
+    | '/lawyers'
     | '/login'
+    | '/profile'
     | '/signup'
+    | '/lawyers/$id'
   id:
     | '__root__'
     | '/'
     | '/assistant'
     | '/cases'
+    | '/consultations'
     | '/dashboard'
     | '/documents'
     | '/knowledge'
+    | '/lawyers'
     | '/login'
+    | '/profile'
     | '/signup'
+    | '/lawyers/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
   CasesRoute: typeof CasesRoute
+  ConsultationsRoute: typeof ConsultationsRoute
   DashboardRoute: typeof DashboardRoute
   DocumentsRoute: typeof DocumentsRoute
   KnowledgeRoute: typeof KnowledgeRoute
+  LawyersRoute: typeof LawyersRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
 }
 
@@ -143,11 +194,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lawyers': {
+      id: '/lawyers'
+      path: '/lawyers'
+      fullPath: '/lawyers'
+      preLoaderRoute: typeof LawyersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/knowledge': {
@@ -171,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consultations': {
+      id: '/consultations'
+      path: '/consultations'
+      fullPath: '/consultations'
+      preLoaderRoute: typeof ConsultationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cases': {
       id: '/cases'
       path: '/cases'
@@ -192,17 +264,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lawyers/$id': {
+      id: '/lawyers/$id'
+      path: '/$id'
+      fullPath: '/lawyers/$id'
+      preLoaderRoute: typeof LawyersIdRouteImport
+      parentRoute: typeof LawyersRoute
+    }
   }
 }
+
+interface LawyersRouteChildren {
+  LawyersIdRoute: typeof LawyersIdRoute
+}
+
+const LawyersRouteChildren: LawyersRouteChildren = {
+  LawyersIdRoute: LawyersIdRoute,
+}
+
+const LawyersRouteWithChildren =
+  LawyersRoute._addFileChildren(LawyersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
   CasesRoute: CasesRoute,
+  ConsultationsRoute: ConsultationsRoute,
   DashboardRoute: DashboardRoute,
   DocumentsRoute: DocumentsRoute,
   KnowledgeRoute: KnowledgeRoute,
+  LawyersRoute: LawyersRouteWithChildren,
   LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
